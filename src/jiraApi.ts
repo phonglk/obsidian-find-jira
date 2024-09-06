@@ -1,5 +1,5 @@
 import { requestUrl } from 'obsidian';
-import { FindJiraIssueSettings, JiraIssue } from './types';
+import { FindJiraIssueSettings, JiraIssue } from './main';
 
 export async function fetchJiraIssues(settings: FindJiraIssueSettings, query: string): Promise<JiraIssue[]> {
     const jql = buildJql(settings.project, query);

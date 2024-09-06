@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.jira-issue-view {
+    padding: var(--size-4-4);
+}
+
+.jira-issue-view .search-input {
+    width: 100%;
+    margin-bottom: var(--size-4-2);
+}
+
+.jira-issue-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.jira-issue-item {
+    padding: var(--size-4-2);
+    margin-bottom: var(--size-4-2);
+    border-radius: var(--radius-s);
+    background-color: var(--background-secondary);
+    cursor: pointer;
+}
+
+.jira-issue-item:hover {
+    background-color: var(--background-secondary-alt);
+}
+
+.jira-issue-key {
+    font-weight: bold;
+}
+
+.jira-issue-status {
+    color: var(--text-accent);
+}
+
+.loading, .error {
+    text-align: center;
+    margin: var(--size-4-2) 0;
+}
+
+.error {
+    color: var(--text-error);
+}

@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import FindJiraIssuePlugin from './FindJiraIssuePlugin';
-import { FindJiraIssueSettings } from './types';
+import { FindJiraIssueSettings } from '../types';
 
 export default class FindJiraIssueSettingTab extends PluginSettingTab {
     private plugin: FindJiraIssuePlugin;

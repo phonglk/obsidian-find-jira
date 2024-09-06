@@ -11,6 +11,10 @@ If your plugin does not need CSS, delete this file.
     padding: 10px;
 }
 
+.search-container {
+    margin: 10px;
+}
+
 .jira-search-container input {
     width: 100%;
     padding: 5px;
@@ -38,4 +42,21 @@ If your plugin does not need CSS, delete this file.
 .jira-issue-status {
     font-size: 0.8em;
     color: var(--text-muted);
+}
+.jira-toolbar {
+    display: flex;
+    justify-content: flex-start;
+    padding: 8px;
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.jira-toolbar-icon {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+
+.jira-toolbar-icon:hover {
+    background-color: var(--background-modifier-hover);
 }
