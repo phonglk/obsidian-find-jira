@@ -6,3 +6,36 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.jira-search-container {
+    padding: 10px;
+}
+
+.jira-search-container input {
+    width: 100%;
+    padding: 5px;
+}
+
+.jira-issue-list {
+    padding: 10px;
+}
+
+.jira-issue-item {
+    padding: 5px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    cursor: pointer;
+}
+
+.jira-issue-item:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.jira-issue-title {
+    font-weight: bold;
+}
+
+.jira-issue-status {
+    font-size: 0.8em;
+    color: var(--text-muted);
+}
