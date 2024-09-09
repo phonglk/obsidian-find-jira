@@ -2,6 +2,9 @@
 
 This plugin allows you to search for Jira issues within Obsidian (https://obsidian.md) and easily add them to your documents.
 
+![image](https://github.com/user-attachments/assets/e917d18f-2641-4b37-8466-632d334dafb8)
+
+
 ## Features
 
 - Search for Jira issues using basic filters
