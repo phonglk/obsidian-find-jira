@@ -50,7 +50,6 @@ export default class FindJiraIssuePlugin extends Plugin {
 
     async onload() {
         await this.loadSettings();
-        this.addRibbonIcon('search', 'Toggle Jira Issue View', this.toggleJiraView.bind(this));
         this.addCommand({
             id: 'toggle-jira-issue-view',
             name: 'Toggle Jira Issue View',
@@ -136,7 +135,7 @@ class JiraIssueItemView extends ItemView {
     }
 
     getDisplayText(): string {
-        return 'Jira Issues';
+        return 'Find Jira Issues';
     }
 
     async onOpen() {
@@ -166,5 +165,9 @@ class JiraIssueItemView extends ItemView {
                 )
             );
         }
+    }
+
+    getIcon(): string {
+        return 'search';
     }
 }
