@@ -46,10 +46,6 @@ Note: Your Jira credentials are stored locally and are never sent to any third-p
 - Run `npm run dev` to watch for changes and recompile.
 - Reload Obsidian to see updates.
 
-## Contributing
-
-[Add guidelines for contributing to your plugin]
-
 ## License
 
 [Specify the license for your plugin]
