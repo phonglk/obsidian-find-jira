@@ -158,9 +158,9 @@ class JiraIssueItemView extends ItemView {
                 React.createElement(React.StrictMode, null,
                     React.createElement(JiraIssueView, {
                         settings: this.plugin.settings,
-                        fetchJiraIssues: fetchJiraIssues,
+                        fetchJiraIssues,
                         insertJiraIssueLink: this.plugin.insertJiraIssueLink.bind(this.plugin),
-                        fetchJiraStatuses: fetchJiraStatuses
+                        fetchJiraStatuses,
                     })
                 )
             );

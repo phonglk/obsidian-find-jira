@@ -6,7 +6,6 @@ This plugin allows you to search for Jira issues within Obsidian (https://obsidi
 
 - Search for Jira issues using basic filters
 - Click to insert issue details into your current document
-- [Any additional features specific to your implementation]
 
 ## Installation
 
@@ -33,14 +32,14 @@ This plugin allows you to search for Jira issues within Obsidian (https://obsidi
 5. Set default project(s) for quicker searching.
 6. (Optional) Customize the issue insert format:
    - Use placeholders like {key}, {summary}, {status}, {assignee}
-   - Default: "[{key}] {summary} ({status})"
+   - Default: "[key}:{summary}"
 7. Save the settings.
 
 Note: Your Jira credentials are stored locally and are never sent to any third-party servers.
 
 ## Development
 
-- Main component: `src/SearchComponentWrapper.tsx`
+- Main component: `src/main.ts`
 - Run `npm run dev` to watch for changes and recompile.
 - Reload Obsidian to see updates.
 

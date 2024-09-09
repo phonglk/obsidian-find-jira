@@ -10,12 +10,14 @@ interface JiraIssueViewProps {
     settings: FindJiraIssueSettings;
     fetchJiraIssues: (settings: FindJiraIssueSettings, jql: string, signal?: AbortSignal) => Promise<JiraIssue[]>;
     insertJiraIssueLink: (issue: JiraIssue) => void;
+    fetchJiraStatuses: (settings: FindJiraIssueSettings) => Promise<JiraStatus[]>;
 }
 
 export const JiraIssueView: React.FC<JiraIssueViewProps> = ({ 
     settings, 
     fetchJiraIssues, 
-    insertJiraIssueLink
+    insertJiraIssueLink,
+    fetchJiraStatuses
 }: JiraIssueViewProps) => {
     const [issues, setIssues] = useState<JiraIssue[]>([]);
     const [loading, setLoading] = useState(false);
@@ -164,8 +166,6 @@ export const JiraIssueView: React.FC<JiraIssueViewProps> = ({
                 <SearchComponentWrapper
                     onSearch={debouncedFetchIssues}
                     placeholder="Search Jira issues..."
-                    className="search-input"
-                    icon={<MagnifyingGlassIcon className="w-4 h-4" />}
                 />
             </div>
             {error && <div className="jira-error text-sm mb-2">{error}</div>}
