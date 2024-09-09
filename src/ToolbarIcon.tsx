@@ -1,48 +1,112 @@
-import React, { useEffect, useRef } from 'react';
-import { setIcon, Menu } from 'obsidian';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 
 interface MenuItem {
     title: string;
-    onClick: () => void;
+    onClick: (checked: boolean) => void;
+    checked: boolean;
 }
 
 interface ToolbarIconProps {
-    icon: string;
+    icon: React.ReactNode;
     tooltip: string;
     onClick?: () => void;
     menu?: MenuItem[];
+    isSelected?: boolean;
+    className?: string;
 }
 
-const ToolbarIcon: React.FC<ToolbarIconProps> = ({ icon, tooltip, onClick, menu }) => {
+const ToolbarIcon: React.FC<ToolbarIconProps> = ({ 
+    icon, 
+    tooltip, 
+    onClick, 
+    menu, 
+    isSelected = false,
+    className = ''
+}: ToolbarIconProps) => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
     const iconRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (iconRef.current) {
-            setIcon(iconRef.current, icon);
-        }
-    }, [icon]);
+    // Add this new function to check if any menu item is selected
+    const isAnyMenuItemSelected = useCallback(() => {
+        return menu ? menu.some(item => item.checked) : false;
+    }, [menu]);
 
     const handleClick = (event: React.MouseEvent) => {
         if (menu) {
-            const obsidianMenu = new Menu();
-            menu.forEach(item => {
-                obsidianMenu.addItem((menuItem) => 
-                    menuItem.setTitle(item.title).onClick(item.onClick)
-                );
-            });
-            obsidianMenu.showAtMouseEvent(event.nativeEvent as MouseEvent);
+            setIsMenuOpen(!isMenuOpen);
         } else if (onClick) {
             onClick();
         }
     };
 
+    const handleMenuItemClick = useCallback((index: number) => {
+        if (menu) {
+            const item = menu[index];
+            item.onClick(!item.checked);
+        }
+    }, [menu]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (isMenuOpen && 
+                menuRef.current && 
+                !menuRef.current.contains(event.target as Node) &&
+                iconRef.current &&
+                !iconRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isMenuOpen]);
+
     return (
-        <div 
-            ref={iconRef}
-            className="nav-action-button"
-            aria-label={tooltip}
-            onClick={handleClick}
-        />
+        <div className="toolbar-icon-container relative">
+            <div 
+                ref={iconRef}
+                className={`
+                    clickable-icon
+                    flex items-center justify-center w-8 h-8
+                    text-sm text-muted-foreground hover:text-foreground
+                    ${isSelected || isAnyMenuItemSelected() ? 'is-active' : ''}
+                    ${className}
+                `}
+                aria-label={tooltip}
+                onClick={handleClick}
+                title={tooltip}
+            >
+                {icon}
+            </div>
+            {menu && isMenuOpen && (
+                <div 
+                    ref={menuRef}
+                    className="toolbar-dropdown absolute top-full left-0 mt-1 py-2 rounded-md shadow-md z-50 min-w-[200px]" 
+                    style={{ 
+                        backgroundColor: 'var(--background-primary)',
+                        border: '1px solid var(--background-modifier-border)'
+                    }}
+                >
+                    {menu.map((item, index) => (
+                        <label 
+                            key={index}
+                            className="toolbar-dropdown-item flex items-center px-4 py-2 cursor-pointer hover:bg-hover transition-colors duration-150"
+                        >
+                            <input
+                                type="checkbox"
+                                checked={item.checked}
+                                onChange={() => handleMenuItemClick(index)}
+                                className="mr-3 toolbar-checkbox"
+                            />
+                            <span className="text-sm toolbar-dropdown-text">{item.title}</span>
+                        </label>
+                    ))}
+                </div>
+            )}
+        </div>
     );
 };
 

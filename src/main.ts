@@ -1,9 +1,9 @@
 import './styles.css';
-import { App, Plugin, PluginSettingTab, Setting, WorkspaceLeaf, ItemView } from 'obsidian';
+import { Plugin, WorkspaceLeaf, ItemView, MarkdownView, Notice } from 'obsidian';
 import { createRoot, Root } from 'react-dom/client';
-import React from 'react';
+import * as React from 'react';
 import JiraIssueView from './JiraIssueView';
-import { fetchJiraIssues } from './jiraApi';
+import { fetchJiraIssues, fetchJiraStatuses } from './jiraApi';
 import FindJiraIssueSettingTab from './FindJiraIssueSettingTab';
 
 export interface FindJiraIssueSettings {
@@ -11,28 +11,42 @@ export interface FindJiraIssueSettings {
     username: string;
     apiToken: string;
     project: string;
+    insertFormat: string;
 }
 
 const DEFAULT_SETTINGS: FindJiraIssueSettings = {
     jiraUrl: '',
     username: '',
     apiToken: '',
-    project: ''
+    project: '',
+    insertFormat: '{key}:{summary}'
 }
 
 export interface JiraIssue {
     key: string;
     fields: {
         summary: string;
+        description?: string;
         status: {
             name: string;
+        };
+        parent?: {
+            fields: {
+                summary: string;
+            }
+        };
+        assignee?: {
+            displayName: string;
+            avatarUrls: {
+                '16x16': string;
+            };
         };
     };
 }
 
 export default class FindJiraIssuePlugin extends Plugin {
     settings: FindJiraIssueSettings;
-    private root: Root | null = null;
+    private lastActiveMarkdownView: MarkdownView | null = null;
 
     async onload() {
         await this.loadSettings();
@@ -45,6 +59,14 @@ export default class FindJiraIssuePlugin extends Plugin {
         this.addSettingTab(new FindJiraIssueSettingTab(this.app, this));
 
         this.registerView('jira-issue-view', (leaf) => new JiraIssueItemView(leaf, this));
+
+        this.registerEvent(
+            this.app.workspace.on('active-leaf-change', (leaf) => {
+                if (leaf?.view instanceof MarkdownView) {
+                    this.lastActiveMarkdownView = leaf.view;
+                }
+            })
+        );
     }
 
     async toggleJiraView() {
@@ -53,7 +75,7 @@ export default class FindJiraIssuePlugin extends Plugin {
             this.app.workspace.revealLeaf(existing[0]);
         } else {
             const leaf = this.app.workspace.getRightLeaf(false);
-            await leaf.setViewState({ type: 'jira-issue-view', active: true });
+            if (leaf) await leaf.setViewState({ type: 'jira-issue-view', active: true });
         }
     }
 
@@ -66,14 +88,37 @@ export default class FindJiraIssuePlugin extends Plugin {
     }
 
     insertJiraIssueLink(issue: JiraIssue) {
-        const activeView = this.app.workspace.getActiveViewOfType('markdown');
-        if (activeView) {
+        const activeView = this.lastActiveMarkdownView || this.app.workspace.getActiveViewOfType(MarkdownView);
+        if (activeView && activeView.editor) {
             const editor = activeView.editor;
             const cursor = editor.getCursor();
-            const insertText = `[${issue.key}: ${issue.fields.summary}](${this.settings.jiraUrl}/browse/${issue.key})`;
-            editor.replaceRange(insertText, cursor);
-            editor.setCursor({ line: cursor.line, ch: cursor.ch + insertText.length });
+            const insertText = this.formatInsertText(issue);
+            const linkText = `[${insertText}](${this.settings.jiraUrl}/browse/${issue.key})`;
+            editor.replaceRange(linkText, cursor);
+            editor.setCursor({ line: cursor.line, ch: cursor.ch + linkText.length });
+        } else {
+            console.error('No active markdown view found');
+            new Notice('Please open a markdown file to insert the Jira issue link');
         }
+    }
+
+    private formatInsertText(issue: JiraIssue): string {
+        return this.settings.insertFormat.replace(/{(\w+)}/g, (match, field) => {
+            switch (field) {
+                case 'key':
+                    return issue.key;
+                case 'summary':
+                    return issue.fields.summary;
+                case 'author':
+                    return issue.fields.assignee?.displayName || 'Unassigned';
+                case 'status':
+                    return issue.fields.status.name;
+                case 'parent':
+                    return issue.fields.parent?.fields.summary || 'No Parent';
+                default:
+                    return match;
+            }
+        });
     }
 }
 
@@ -97,8 +142,7 @@ class JiraIssueItemView extends ItemView {
     async onOpen() {
         const { containerEl } = this;
         containerEl.empty();
-        const rootEl = containerEl.createDiv();
-        this.root = createRoot(rootEl);
+        this.root = createRoot(containerEl);
         this.renderView();
     }
 
@@ -116,7 +160,8 @@ class JiraIssueItemView extends ItemView {
                     React.createElement(JiraIssueView, {
                         settings: this.plugin.settings,
                         fetchJiraIssues: fetchJiraIssues,
-                        insertJiraIssueLink: this.plugin.insertJiraIssueLink.bind(this.plugin)
+                        insertJiraIssueLink: this.plugin.insertJiraIssueLink.bind(this.plugin),
+                        fetchJiraStatuses: fetchJiraStatuses
                     })
                 )
             );

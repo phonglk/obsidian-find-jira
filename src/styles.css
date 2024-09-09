@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 .jira-issue-view {
-    padding: var(--size-4-4);
+    padding: var(--size-4-2);
+    background-color: var(--background-primary);
+    border-radius: var(--radius-m);
 }
 
 .jira-issue-view .search-input {
@@ -14,6 +16,7 @@
 .jira-issue-list {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 .jira-issue-item {
@@ -21,26 +24,82 @@
     margin-bottom: var(--size-4-2);
     border-radius: var(--radius-s);
     background-color: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
     cursor: pointer;
+    transition: background-color 0.15s ease;
 }
 
 .jira-issue-item:hover {
-    background-color: var(--background-secondary-alt);
+    background-color: var(--background-modifier-hover);
+}
+
+.jira-issue-item:last-child {
+    margin-bottom: 0;
+}
+
+.jira-issue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--size-4-1);
 }
 
 .jira-issue-key {
-    font-weight: bold;
+    font-weight: var(--font-bold);
+    color: var(--text-muted);
+    font-size: var(--font-smaller);
 }
 
 .jira-issue-status {
-    color: var(--text-accent);
+    font-size: var(--font-smaller);
+    padding: 2px 6px;
+    border-radius: var(--radius-s);
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
 }
 
-.loading, .error {
+.jira-issue-summary {
+    color: var(--text-normal);
+    font-size: var(--font-ui-small);
+    line-height: var(--line-height-tight);
+}
+
+.jira-loading, .jira-error {
     text-align: center;
     margin: var(--size-4-2) 0;
+    color: var(--text-muted);
+    font-size: var(--font-ui-small);
 }
 
-.error {
+.jira-error {
     color: var(--text-error);
+}
+
+.hover\:bg-hover:hover {
+    background-color: var(--hover-bg);
+}
+
+.toolbar-icon-container {
+    position: relative;
+}
+
+.toolbar-dropdown {
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+}
+
+.toolbar-dropdown-item:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.toolbar-checkbox {
+    border-color: var(--checkbox-border-color);
+}
+
+.toolbar-checkbox:checked {
+    background-color: var(--checkbox-color);
+}
+
+.toolbar-dropdown-text {
+    color: var(--text-normal);
 }

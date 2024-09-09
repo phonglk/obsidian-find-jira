@@ -42,8 +42,8 @@ const context = await esbuild.context({
 	plugins: [
 		postcss({
 			plugins: [
-				require('tailwindcss'),
-				require('autoprefixer')
+				(await import('tailwindcss')).default,
+				(await import('autoprefixer')).default
 			]
 		})
 	],
