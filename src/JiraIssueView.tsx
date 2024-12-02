@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FindJiraIssueSettings, JiraIssue } from './main';
 import ToolbarIcon from './ToolbarIcon';
 import SearchComponentWrapper from './SearchComponentWrapper';
-import { fetchJiraStatuses, JiraStatus } from './jiraApi';
-import { UserIcon, ListBulletIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { JiraStatus } from './jiraApi';
+import { UserIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 import { ArrowPathIcon } from '@heroicons/react/24/solid'; // Add this import for the spinner icon
 
 interface JiraIssueViewProps {
@@ -49,7 +49,10 @@ export const JiraIssueView: React.FC<JiraIssueViewProps> = ({
             }
             if (query) {
                 const projectPrefix = settings.project.toUpperCase();
-                jql += ` AND (summary ~ "${query}*" OR key = "${projectPrefix}-${query.toUpperCase()}")`;
+                const trimmedQuery = query.trim();
+                const isNumericQuery = /^\d+$/.test(trimmedQuery);
+                const keySearch = isNumericQuery ? ` OR key = "${projectPrefix}-${trimmedQuery}"` : '';
+                jql += ` AND (summary ~ "${trimmedQuery}*"${keySearch})`;
             }
             jql += ` ORDER BY updated DESC`;
 

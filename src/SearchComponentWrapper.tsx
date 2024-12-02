@@ -8,7 +8,6 @@ interface SearchComponentWrapperProps {
 
 const SearchComponentWrapper: React.FC<SearchComponentWrapperProps> = ({ onSearch, placeholder }: SearchComponentWrapperProps) => {
     const searchRef = useRef<HTMLDivElement>(null);
-    const searchComponentRef = useRef<SearchComponent | null>(null);
 
     useEffect(() => {
         if (searchRef.current) {
